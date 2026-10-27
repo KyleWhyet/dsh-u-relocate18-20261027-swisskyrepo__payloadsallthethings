@@ -1,0 +1,23 @@
+name: check-markdown
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+      with:
+        fetch-depth: 0
+
+    - uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
+      id: changed-files
+      with:
+        files: '**/*.md'
+        separator: ","
+
+    - uses: DavidAnson/markdownlint-cli2-action@6bf21b07787794f89a243495939cd651942aeabe # v24.1.0
+      if: steps.changed-files.outputs.any_changed == 'true'
+      with:
+        globs: ${{ steps.changed-files.outputs.all_changed_files }}
+        separator: ","
+        config: ./.github/.markdownlint.json
